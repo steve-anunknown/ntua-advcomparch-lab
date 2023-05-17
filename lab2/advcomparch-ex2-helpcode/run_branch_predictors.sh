@@ -10,7 +10,7 @@ outDir="/home/stefanos/Documents/programming-projects/uni/ntua-advcomparch-lab/l
 
 
 for BENCH in $@; do
-	cd spec_execs_train_inputs/$BENCH
+	cd $BENCH
 
 	line=$(cat speccmds.cmd)
 	stdout_file=$(echo $line | cut -d' ' -f2)
@@ -22,5 +22,5 @@ for BENCH in $@; do
 	echo "PIN_CMD: $pin_cmd"
 	/bin/bash -c "time $pin_cmd"
 
-	cd ../../
+	cd ../
 done
