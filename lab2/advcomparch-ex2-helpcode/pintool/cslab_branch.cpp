@@ -199,7 +199,12 @@ VOID InitPredictors()
 
     // FIFTH EXERCISE
     // Pentium-M predictor
+    // branch_predictors.push_back(new StaticAlwaysTakenPredictor());
+    // branch_predictors.push_back(new StaticBTFNTPredictor());
+    // best predictor of second exercise.
+    // add more
     // branch_predictors.push_back(new PentiumMBranchPredictor());
+    // branch_predictors.push_back(new TournamentHybridPredictor(12, 2, LocalHistoryTwoLevelPredictor(10, 1024, 3, 1024), GlobalHistoryTwoLevelPredictor(12, 2)));
 }
 
 VOID InitRas()
