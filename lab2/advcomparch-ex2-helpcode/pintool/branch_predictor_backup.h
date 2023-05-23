@@ -87,16 +87,16 @@ private:
 };
 
 // Fill in the BTB implementation ...
-class BTBPredictor : public BranchPredictor
+class BTBPredictorEMPTY : public BranchPredictor
 {
 public:
-	BTBPredictor(int btb_lines, int btb_assoc)
+	BTBPredictorEMPTY(int btb_lines, int btb_assoc)
 	     : table_lines(btb_lines), table_assoc(btb_assoc)
 	{
 		/* ... fill me ... */        
 	}
 
-	~BTBPredictor() {
+	~BTBPredictorEMPTY() {
 		/* ... fill me ... */
 	}
 
@@ -123,5 +123,75 @@ public:
 private:
 	int table_lines, table_assoc;
 };
+
+// Fill in the BTB implementation ...
+
+class BTBPredictor : public BranchPredictor
+{
+public:
+	BTBPredictor(int btb_lines, int btb_assoc)
+	     : table_lines(btb_lines), table_assoc(btb_assoc)
+	{
+        sets = table_lines/table_assoc;
+		btb = new ADDRINT*[sets];
+		for (int i = 0; i < sets; i++) {
+			btb[i] = new ADDRINT[table_assoc]();
+		}
+	}
+
+	~BTBPredictor() {
+		for (int i = 0; i < sets; i++) {
+			delete[] btb[i];
+		}
+		delete[] btb;
+	}
+
+    virtual bool predict(ADDRINT ip, ADDRINT target) {
+		int index = ip % (sets);
+		for (int i = 0; i < table_assoc; i++) {
+			if (btb[index][i] == target) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+    virtual void update(bool predicted, bool actual, ADDRINT ip, ADDRINT target) {
+		if (!predicted || actual) {
+			int index = ip % sets;
+			for (int i = 0; i < table_assoc; i++) {
+				if (btb[index][i] == 0) {
+					btb[index][i] = target;
+					break;
+				}
+			}
+		}
+	}
+
+    virtual string getName() { 
+        std::ostringstream stream;
+		stream << "BTB-" << table_lines << "-" << table_assoc;
+		return stream.str();
+	}
+
+    UINT64 getNumCorrectTargetPredictions() { 
+		UINT64 numCorrectPredictions = 0;
+		for (int i = 0; i < sets; i++) {
+			for (int j = 0; j < table_assoc; j++) {
+				if (btb[i][j] != 0) {
+					numCorrectPredictions++;
+				}
+			}
+		}
+		return numCorrectPredictions;
+	}
+
+private:
+	int table_lines, table_assoc, sets;
+	ADDRINT** btb;
+};
+
+
+
 
 #endif

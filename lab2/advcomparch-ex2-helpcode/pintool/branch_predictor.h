@@ -4,6 +4,7 @@
 #include <sstream> // std::ostringstream
 #include <cmath>   // pow()
 #include <cstring> // memset()
+#include <vector> // std::vector
 
 /**
  * A generic BranchPredictor base class.
@@ -137,47 +138,43 @@ private:
     unsigned int table_entries;
 };
 
-// Fill in the BTB implementation ...
-
 class BTBPredictor : public BranchPredictor
 {
 public:
 	BTBPredictor(int btb_lines, int btb_assoc)
 	     : table_lines(btb_lines), table_assoc(btb_assoc)
 	{
-		btb = new ADDRINT*[table_lines/table_assoc];
-		for (int i = 0; i < table_lines/table_assoc; i++) {
-			btb[i] = new ADDRINT[table_assoc]();
+        sets = table_lines/table_   assoc;
+		btb.resize(sets);
+		for (int i = 0; i < sets; i++) {
+			btb[i].resize(table_assoc, std::make_pair(0, 0));
 		}
 	}
 
 	~BTBPredictor() {
-		for (int i = 0; i < table_lines; i++) {
-			delete[] btb[i];
-		}
-		delete[] btb;
+		btb.clear();
 	}
 
     virtual bool predict(ADDRINT ip, ADDRINT target) {
-		int index = ip % (table_lines/table_assoc);
-		for (int i = 0; i < table_assoc; i++) {
-			if (btb[index][i] == target) {
-				return true;
-			}
+		int index = ip % sets;
+		for (auto &entry : btb[index]) {
+			if (entry.first == ip)
+				return entry.second == target;
 		}
 		return false;
 	}
 
     virtual void update(bool predicted, bool actual, ADDRINT ip, ADDRINT target) {
-		if (!predicted || actual) {
-			int index = ip % table_lines;
-			for (int i = 0; i < table_assoc; i++) {
-				if (btb[index][i] == 0) {
-					btb[index][i] = target;
-					break;
-				}
+		int index = ip % table_lines;
+		for (auto &entry : btb[index]) {
+			if (entry.first == ip) {
+				entry.second = target;
+				return;
 			}
 		}
+		// if not found, replace a random entry
+		int replaceIndex = rand() % table_assoc;
+		btb[index][replaceIndex] = std::make_pair(ip, target);
 	}
 
     virtual string getName() { 
@@ -187,20 +184,19 @@ public:
 	}
 
     UINT64 getNumCorrectTargetPredictions() { 
-		UINT64 numCorrectPredictions = 0;
-		for (int i = 0; i < table_lines; i++) {
-			for (int j = 0; j < table_assoc; j++) {
-				if (btb[i][j] != 0) {
-					numCorrectPredictions++;
-				}
+		UINT64 numCorrect = 0;
+		for (auto &line : btb) {
+			for (auto &entry : line) {
+				if (predict(entry.first, entry.second))
+					numCorrect++;
 			}
 		}
-		return numCorrectPredictions;
+		return numCorrect;
 	}
 
 private:
-	int table_lines, table_assoc;
-	ADDRINT** btb;
+	int table_lines, table_assoc, sets;
+	std::vector<std::vector<std::pair<ADDRINT, ADDRINT>>> btb; // The Branch Target Buffer
 };
 
 
@@ -322,10 +318,9 @@ private:
 class GlobalHistoryTwoLevelPredictor: public BranchPredictor
 {
 public:
-    GlobalHistoryTwoLevelPredictor(unsigned int pht_bits_, unsigned int bhr_length_)
-    : BranchPredictor(), pht_bits(pht_bits_), bhr_length(bhr_length_)
+    GlobalHistoryTwoLevelPredictor(unsigned int pht_bits_, unsigned int pht_entries_, unsigned int bhr_length_)
+    : BranchPredictor(), pht_bits(pht_bits_), pht_entries(pht_entries_), bhr_length(bhr_length_)
     {
-        pht_entries = (1 << pht_bits);
         COUNTER_MAX = (1 << pht_bits) - 1;
         CAP = (1 << bhr_length);
 
