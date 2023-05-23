@@ -93,7 +93,7 @@ public:
 	BTBPredictor(int btb_lines, int btb_assoc)
 	     : table_lines(btb_lines), table_assoc(btb_assoc)
 	{
-		/* ... fill me ... */
+		/* ... fill me ... */        
 	}
 
 	~BTBPredictor() {

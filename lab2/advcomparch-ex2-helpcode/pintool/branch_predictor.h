@@ -203,6 +203,7 @@ private:
 	ADDRINT** btb;
 };
 
+
 class StaticAlwaysTakenPredictor: public BranchPredictor
 {
 public:
@@ -297,7 +298,7 @@ public:
                 PHT[BHT[bht_table_index]]--;
         }
         // update bht for specific branch
-        BHT[bht_table_index] = ((BHT[bht_table_index] % CAP) << 1) + (actual)
+        BHT[bht_table_index] = ((BHT[bht_table_index] % CAP) << 1) + (actual);
         updateCounters(predicted, actual);
     };
 
@@ -314,8 +315,8 @@ private:
     unsigned int pht_bits, bht_bits;
     unsigned int pht_entries, bht_entries;
     unsigned int COUNTER_MAX, CAP;
-    unsigned long long *BHT
-    unsigned long long *PHT
+    unsigned long long *BHT;
+    unsigned long long *PHT;
 };
 
 class GlobalHistoryTwoLevelPredictor: public BranchPredictor
@@ -330,7 +331,7 @@ public:
 
         PHT = new unsigned long long *[pht_entries/bhr_length];
         // memset(PHT, 0, pht_entries * sizeof(*PHT));
-        for(int i=0;i<m;++i)
+        for(unsigned int i=0;i<(pht_entries/bhr_length);++i)
         {
             PHT[i] = new unsigned long long [bhr_length];
             memset(PHT[i], 0, sizeof(PHT[i]) * bhr_length);
@@ -339,7 +340,7 @@ public:
     
     ~GlobalHistoryTwoLevelPredictor()
     {
-        for (int i = 0; i < bhr_length; ++i)
+        for (unsigned int i = 0; i < bhr_length; ++i)
         {
             delete[] PHT[i];
         }
@@ -357,7 +358,6 @@ public:
     virtual void update(bool predicted, bool actual, ADDRINT ip, ADDRINT target)
     {
         unsigned int pht_table_index = ip % (pht_entries/bhr_length);
-        unsigned long long pht_table_value = PHT[pht_table_index];
         // update pht for specific pattern
         if (actual) {
             if (PHT[pht_table_index][BHR] < COUNTER_MAX)
@@ -367,7 +367,7 @@ public:
                 PHT[pht_table_index][BHR]--;
         }
         // update bhr
-        BHR = ((BHR % CAP) << 1) + (actual)
+        BHR = ((BHR % CAP) << 1) + (actual);
 
         updateCounters(predicted, actual);
     };
@@ -379,19 +379,19 @@ public:
                << ", PHT n-bit counter length = " << pht_bits
                << ", BHR Length = " << bhr_length;
         return stream.str();
-    }
+    };
 
 private:
     unsigned int pht_bits, pht_entries, bhr_length;
     unsigned int COUNTER_MAX, CAP;
     unsigned long long BHR;
     unsigned long long **PHT;
-}
+};
 
 class TournamentHybridPredictor: public BranchPredictor
 {
 public:
-    TournamentHybridPredictor(unsigned int meta_bits_, unsigned int cntr_bits_, BranchPredictor p0, BranchPredictor p1)
+    TournamentHybridPredictor(unsigned int meta_bits_, unsigned int cntr_bits_, BranchPredictor* p0, BranchPredictor* p1)
     : meta_bits(meta_bits_), cntr_bits(cntr_bits_), predictor0(p0), predictor1(p1)
     {
         meta_entries = 1 << meta_bits;
@@ -406,19 +406,19 @@ public:
         unsigned int ip_table_index = ip % meta_entries;
         unsigned long long ip_table_value = TABLE[ip_table_index];
         bool predictor = ip_table_value >> (cntr_bits - 1);
-        prediction0 = predictor0.predict(ip, target);
-        prediction1 = predictor1.predict(ip, target);
-        return (!predictor)*(predictor0) + (predictor)*(predictor1);
+        prediction0 = predictor0->predict(ip, target);
+        prediction1 = predictor1->predict(ip, target);
+        return (!predictor)*(prediction0) + (predictor)*(prediction1);
     };
 
     virtual void update(bool predicted, bool actual, ADDRINT ip, ADDRINT target) {
         updateCounters(predicted, actual);
-        predictor0.update(prediction0, actual, ip, target);
-        predictor1.update(prediction1, actual, ip, target);
+        predictor0->update(prediction0, actual, ip, target);
+        predictor1->update(prediction1, actual, ip, target);
 
         if (prediction0 == prediction1) return ;
 
-        unsigned int ip_table_index = ip % table_entries;
+        unsigned int ip_table_index = ip % meta_entries;
         if (actual == prediction0) {
             if (TABLE[ip_table_index] < COUNTER_MAX)
                 TABLE[ip_table_index]++;
@@ -431,7 +431,7 @@ public:
     virtual string getName() {
         std::ostringstream stream;
         stream << "TournamentHybridPredictor-" << pow(2.0,double(meta_bits)) / 1024.0 << "K-Entries-("
-               << predictor0.getName() << , << predictor1.getName() << ")";
+               << predictor0->getName() << ", " << predictor1->getName() << ")";
         return stream.str();
     }
 
@@ -440,7 +440,8 @@ private:
     unsigned long long *TABLE;
     unsigned int meta_entries, meta_bits;
     unsigned int COUNTER_MAX, cntr_bits;
-    BranchPredictor predictor0, predictor1;
+    BranchPredictor *predictor0;
+    BranchPredictor *predictor1;
     bool prediction0, prediction1;
 };
 

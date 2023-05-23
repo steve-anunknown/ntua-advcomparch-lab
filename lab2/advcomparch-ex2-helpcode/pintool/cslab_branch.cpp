@@ -165,28 +165,28 @@ VOID InitPredictors()
 {
     // FIRST EXERCISE
     // N-bit predictors 16k
+    /*
     for (int i=1; i <= 4; i++) {
         NbitPredictor *nbitPred = new NbitPredictor(14, i);
         branch_predictors.push_back(nbitPred);
     }
     TwobbitPredictor *twobbitPred = new TwobbitPredictor(14);
     branch_predictors.push_back(twobbitPred);
+    */
 
     // SECOND EXERCISE
     // N-bit predictors 32k
-    /*
     for (int i=1; i <= 2; i++) {
         NbitPredictor *nbitPred = new NbitPredictor(15, i);
-        branch_predictors.push_back(nbitPred);
-    
+        branch_predictors.push_back(nbitPred);    
     }
     branch_predictors.push_back(new TwobbitPredictor(15));
     
     branch_predictors.push_back(new NbitPredictor(15, 4));
-    */
 
     // THIRD EXERCISE
-    /* BTB predictors
+    // BTB predictors
+    /*
     branch_predictors.push_back(new BTBPredictor(512, 1));
     branch_predictors.push_back(new BTBPredictor(512, 2));
     branch_predictors.push_back(new BTBPredictor(256, 2));
@@ -209,17 +209,20 @@ VOID InitPredictors()
 
 VOID InitRas()
 {
-    for (UINT32 i = 1; i <= 32; i*=2)
-        ras_vec.push_back(new RAS(i));
-    // FOURTH EXERCISE
     /*
+        for (UINT32 i = 1; i <= 32; i*=2)
+        ras_vec.push_back(new RAS(i));
+    
+    // FOURTH EXERCISE
+    
     ras_vec.push_back(new RAS(4));
     ras_vec.push_back(new RAS(8));
     ras_vec.push_back(new RAS(16));
     ras_vec.push_back(new RAS(32));
     ras_vec.push_back(new RAS(48));
     ras_vec.push_back(new RAS(64));
-    */ 
+    */
+    
 }
 
 int main(int argc, char *argv[])
