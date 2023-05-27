@@ -203,13 +203,13 @@ VOID InitPredictors()
     branch_predictors.push_back(bruh);
     StaticBTFNTPredictor *bruhh = new StaticBTFNTPredictor();
     branch_predictors.push_back(bruhh);
-    // best predictor of second exercise.
-    // branch_predictors.push_back(new )
-    PentiumMBranchPredictor *bruhhh =  new PentiumMBranchPredictor();
-    branch_predictors.push_back(bruhhh);
     */
     //std::cout << "Local constructor ok" << std::endl;
-    /**/
+
+    branch_predictors.push_back(new StaticAlwaysTakenPredictor);
+    branch_predictors.push_back(new StaticBTFNTPredictor);
+    branch_predictors.push_back(new NbitPredictor(15, 4));
+    branch_predictors.push_back(new PentiumMBranchPredictor());
     branch_predictors.push_back(new LocalHistoryTwoLevelPredictor(2, 8192, 8, 2048));
     branch_predictors.push_back(new LocalHistoryTwoLevelPredictor(2, 8192, 4, 4096));
     branch_predictors.push_back(new LocalHistoryTwoLevelPredictor(2, 8192, 2, 8192));
@@ -222,14 +222,19 @@ VOID InitPredictors()
     branch_predictors.push_back(new GlobalHistoryTwoLevelPredictor(8192, 4, 2));
     branch_predictors.push_back(new GlobalHistoryTwoLevelPredictor(8192, 4, 4));
     branch_predictors.push_back(new GlobalHistoryTwoLevelPredictor(8192, 4, 8));
-    //alpha
-    /*s
-    branch_predictors.push_back(new TournamentHybridPredictor(1024, 2, LocalHistoryTwoLevelPredictor(10, 1024, 3, 1024), GlobalHistoryTwoLevelPredictor(12, 2)));
-    branch_predictors.push_back(new TournamentHybridPredictor(1024, 2, LocalHistoryTwoLevelPredictor(10, 1024, 3, 1024), GlobalHistoryTwoLevelPredictor(12, 2)));
-    branch_predictors.push_back(new TournamentHybridPredictor(2048, 2, GlobalHistoryTwoLevelPredictor(10, 1024, 3, 1024), GlobalHistoryTwoLevelPredictor(12, 2)));
-    branch_predictors.push_back(new TournamentHybridPredictor(2048, 2, GlobalHistoryTwoLevelPredictor(10, 1024, 3, 1024), GlobalHistoryTwoLevelPredictor(12, 2)));
-    */
     
+    // alpha
+    branch_predictors.push_back(new TournamentHybridPredictor(4096, 2, new LocalHistoryTwoLevelPredictor(3, 1024, 10, 1024), new GlobalHistoryTwoLevelPredictor(4096, 2, 12)));
+    // rest tournament predictors
+    branch_predictors.push_back(new TournamentHybridPredictor(2048, 2, new LocalHistoryTwoLevelPredictor(3, 1024, 10, 1024), new GlobalHistoryTwoLevelPredictor(8192, 2, 4)));
+    branch_predictors.push_back(new TournamentHybridPredictor(2048, 4, new LocalHistoryTwoLevelPredictor(3, 1024, 10, 1024), new GlobalHistoryTwoLevelPredictor(8192, 2, 8)));
+    branch_predictors.push_back(new TournamentHybridPredictor(1024, 2, new LocalHistoryTwoLevelPredictor(3, 1024, 10, 1024), new GlobalHistoryTwoLevelPredictor(4096, 4, 4)));
+    branch_predictors.push_back(new TournamentHybridPredictor(1024, 4, new LocalHistoryTwoLevelPredictor(3, 1024, 10, 1024), new GlobalHistoryTwoLevelPredictor(4096, 4, 8)));
+    
+    branch_predictors.push_back(new TournamentHybridPredictor(1024, 2, new NbitPredictor(15, 4), new GlobalHistoryTwoLevelPredictor(4096, 4, 4)));
+    branch_predictors.push_back(new TournamentHybridPredictor(1024, 4, new NbitPredictor(15, 4), new GlobalHistoryTwoLevelPredictor(4096, 4, 8)));
+    branch_predictors.push_back(new TournamentHybridPredictor(2048, 2, new NbitPredictor(15, 4), new GlobalHistoryTwoLevelPredictor(2048, 8, 4)));
+    branch_predictors.push_back(new TournamentHybridPredictor(2048, 4, new NbitPredictor(15, 4), new GlobalHistoryTwoLevelPredictor(2048, 8, 8)));
 }
 
 VOID InitRas()
@@ -246,8 +251,8 @@ VOID InitRas()
     ras_vec.push_back(new RAS(16));
     ras_vec.push_back(new RAS(32));
     ras_vec.push_back(new RAS(48));
-    */
     ras_vec.push_back(new RAS(64));
+    */
         
 }
 

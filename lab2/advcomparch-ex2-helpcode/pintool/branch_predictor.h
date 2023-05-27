@@ -11,6 +11,7 @@
  * All predictors can be subclasses with overloaded predict() and update()
  * methods.
  **/
+
 class BranchPredictor
 {
 public:
@@ -165,7 +166,7 @@ public:
 	}
 
     virtual void update(bool predicted, bool actual, ADDRINT ip, ADDRINT target) {
-		int index = ip % table_lines;
+		int index = ip % sets;
 		for (auto &entry : btb[index]) {
 			if (entry.first == ip) {
 				entry.second = target;
@@ -175,6 +176,7 @@ public:
 		// if not found, replace a random entry
 		int replaceIndex = rand() % table_assoc;
 		btb[index][replaceIndex] = std::make_pair(ip, target);
+        updateCounters(predicted, actual);
 	}
 
     virtual string getName() { 
@@ -332,7 +334,7 @@ private:
 class GlobalHistoryTwoLevelPredictor: public BranchPredictor
 {
 public:
-    GlobalHistoryTwoLevelPredictor(unsigned int pht_bits_, unsigned int pht_entries_, unsigned int bhr_length_)
+    GlobalHistoryTwoLevelPredictor(unsigned int pht_entries_, unsigned int pht_bits_, unsigned int bhr_length_)
     : BranchPredictor(), pht_bits(pht_bits_), pht_entries(pht_entries_), bhr_length(bhr_length_)
     {
         //std::cout << "Constructor start" << std::endl;
@@ -353,7 +355,7 @@ public:
     virtual bool predict(ADDRINT ip, ADDRINT target)
     {
         //std::cout << "predict bad 1" << std::endl;
-        unsigned int pht_table_index = ((BHR << (1 << bhr_length)) + (ip % (1 << bhr_length))) % pht_entries;
+        unsigned int pht_table_index = ((BHR * (pht_entries >> bhr_length)) + (ip % (pht_entries >> bhr_length))) % pht_entries;
         //std::cout << "predict bad 2" << std::endl;
         unsigned long long pht_table_value = PHT[pht_table_index];
         //std::cout << "predict bad 3" << std::endl;
@@ -365,7 +367,7 @@ public:
     virtual void update(bool predicted, bool actual, ADDRINT ip, ADDRINT target)
     {
         //std::cout << "update bad" << std::endl;
-        unsigned int pht_table_index = ((BHR << (1 << bhr_length)) + (ip % (1 << bhr_length))) % pht_entries;
+        unsigned int pht_table_index = ((BHR * (pht_entries >> bhr_length)) + (ip % (pht_entries >> bhr_length))) % pht_entries;
         // update pht for specific pattern
         if (actual) {
             if (PHT[pht_table_index] < COUNTER_MAX)
@@ -440,7 +442,7 @@ public:
 
     virtual string getName() {
         std::ostringstream stream;
-        stream << "TournamentHybridPredictor-" << pow(2.0,double(meta_entries)) / 1024.0 << "K-Entries-("
+        stream << "TournamentHybridPredictor-" << meta_entries / 1024.0 << "K-Entries-("
                << predictor0->getName() << ", " << predictor1->getName() << ")";
         return stream.str();
     }
