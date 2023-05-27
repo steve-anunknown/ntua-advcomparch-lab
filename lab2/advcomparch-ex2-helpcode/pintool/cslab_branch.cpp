@@ -186,7 +186,7 @@ VOID InitPredictors()
     */
     // THIRD EXERCISE
     // BTB predictors
-    
+    /*
     branch_predictors.push_back(new BTBPredictor(512, 1));
     branch_predictors.push_back(new BTBPredictor(512, 2));
     branch_predictors.push_back(new BTBPredictor(256, 2));
@@ -196,36 +196,47 @@ VOID InitPredictors()
     branch_predictors.push_back(new BTBPredictor(64, 4));
     branch_predictors.push_back(new BTBPredictor(64, 8));
     
-
+    */
     // FIFTH EXERCISE
-    branch_predictors.push_back(new StaticAlwaysTakenPredictor());
-    branch_predictors.push_back(new StaticBTFNTPredictor());
+    /*
+    StaticAlwaysTakenPredictor *bruh = new StaticAlwaysTakenPredictor();
+    branch_predictors.push_back(bruh);
+    StaticBTFNTPredictor *bruhh = new StaticBTFNTPredictor();
+    branch_predictors.push_back(bruhh);
     // best predictor of second exercise.
     // branch_predictors.push_back(new )
-    branch_predictors.push_back(new PentiumMBranchPredictor());
-
-    branch_predictors.push_back(new LocalHistoryTwoLevelPredictor(2, 8192, , 2048));
-    branch_predictors.push_back(new LocalHistoryTwoLevelPredictor(2, 8192, , 4098));
-    branch_predictors.push_back(new LocalHistoryTwoLevelPredictor(2, 8192, , 8192));
-
-    branch_predictors.push_back(new GlobalHistoryTwoLevelPredictor( , 2, 2));
-    branch_predictors.push_back(new GlobalHistoryTwoLevelPredictor( , 2, 4));
-    branch_predictors.push_back(new GlobalHistoryTwoLevelPredictor( , 2, 8));
-    branch_predictors.push_back(new GlobalHistoryTwoLevelPredictor( , 4, 2));
-    branch_predictors.push_back(new GlobalHistoryTwoLevelPredictor( , 4, 4));
-    branch_predictors.push_back(new GlobalHistoryTwoLevelPredictor( , 4, 8));
-
-    //alpha 
-    branch_predictors.push_back(new TournamentHybridPredictor(12, 2, LocalHistoryTwoLevelPredictor(10, 1024, 3, 1024), GlobalHistoryTwoLevelPredictor(12, 2)));
-    branch_predictors.push_back(new TournamentHybridPredictor(12, 2, LocalHistoryTwoLevelPredictor(10, 1024, 3, 1024), GlobalHistoryTwoLevelPredictor(12, 2)));
-    branch_predictors.push_back(new TournamentHybridPredictor(12, 2, GlobalHistoryTwoLevelPredictor(10, 1024, 3, 1024), GlobalHistoryTwoLevelPredictor(12, 2)));
-    branch_predictors.push_back(new TournamentHybridPredictor(12, 2, GlobalHistoryTwoLevelPredictor(10, 1024, 3, 1024), GlobalHistoryTwoLevelPredictor(12, 2)));
+    PentiumMBranchPredictor *bruhhh =  new PentiumMBranchPredictor();
+    branch_predictors.push_back(bruhhh);
+    */
+    //std::cout << "Local constructor ok" << std::endl;
+    /**/
+    branch_predictors.push_back(new LocalHistoryTwoLevelPredictor(2, 8192, 8, 2048));
+    branch_predictors.push_back(new LocalHistoryTwoLevelPredictor(2, 8192, 4, 4096));
+    branch_predictors.push_back(new LocalHistoryTwoLevelPredictor(2, 8192, 2, 8192));
+    
+    //std::cout << "HELLO" << std::endl;
+    
+    branch_predictors.push_back(new GlobalHistoryTwoLevelPredictor(16384, 2, 2));
+    branch_predictors.push_back(new GlobalHistoryTwoLevelPredictor(16384, 2, 4));
+    branch_predictors.push_back(new GlobalHistoryTwoLevelPredictor(16384, 2, 8));
+    branch_predictors.push_back(new GlobalHistoryTwoLevelPredictor(8192, 4, 2));
+    branch_predictors.push_back(new GlobalHistoryTwoLevelPredictor(8192, 4, 4));
+    branch_predictors.push_back(new GlobalHistoryTwoLevelPredictor(8192, 4, 8));
+    //alpha
+    /*s
+    branch_predictors.push_back(new TournamentHybridPredictor(1024, 2, LocalHistoryTwoLevelPredictor(10, 1024, 3, 1024), GlobalHistoryTwoLevelPredictor(12, 2)));
+    branch_predictors.push_back(new TournamentHybridPredictor(1024, 2, LocalHistoryTwoLevelPredictor(10, 1024, 3, 1024), GlobalHistoryTwoLevelPredictor(12, 2)));
+    branch_predictors.push_back(new TournamentHybridPredictor(2048, 2, GlobalHistoryTwoLevelPredictor(10, 1024, 3, 1024), GlobalHistoryTwoLevelPredictor(12, 2)));
+    branch_predictors.push_back(new TournamentHybridPredictor(2048, 2, GlobalHistoryTwoLevelPredictor(10, 1024, 3, 1024), GlobalHistoryTwoLevelPredictor(12, 2)));
+    */
+    
 }
 
 VOID InitRas()
 {
+    
     /*
-        for (UINT32 i = 1; i <= 32; i*=2)
+    for (UINT32 i = 1; i <= 32; i*=2)
         ras_vec.push_back(new RAS(i));
     
     // FOURTH EXERCISE
@@ -235,9 +246,9 @@ VOID InitRas()
     ras_vec.push_back(new RAS(16));
     ras_vec.push_back(new RAS(32));
     ras_vec.push_back(new RAS(48));
-    ras_vec.push_back(new RAS(64));
     */
-    
+    ras_vec.push_back(new RAS(64));
+        
 }
 
 int main(int argc, char *argv[])
