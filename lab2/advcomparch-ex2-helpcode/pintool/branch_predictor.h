@@ -143,39 +143,71 @@ class BTBPredictor : public BranchPredictor
 {
 public:
 	BTBPredictor(int btb_lines, int btb_assoc)
-	     : table_lines(btb_lines), table_assoc(btb_assoc)
+    : table_lines(btb_lines), table_assoc(btb_assoc),
+    correct_target_predictions(0), incorrect_target_predictions(0), timestamp(0)
 	{
-        sets = table_lines/table_assoc;
-		btb.resize(sets);
-		for (int i = 0; i < sets; i++) {
-			btb[i].resize(table_assoc, std::make_pair(0, 0));
+        total = table_lines*table_assoc;
+		btb.resize(total);
+        for (int i = 0; i < table_lines; i++) {
+			btb[i].resize(table_assoc, std::make_tuple(0, 0, 0));
 		}
 	}
 
-	~BTBPredictor() {
-		btb.clear();
-	}
+	~BTBPredictor() { btb.clear(); }
 
-    virtual bool predict(ADDRINT ip, ADDRINT target) {
-		int index = ip % sets;
-		for (auto &entry : btb[index]) {
-			if (entry.first == ip)
-				return entry.second == target;
+    virtual bool predict(ADDRINT ip, ADDRINT target)
+    {
+        int index = ip % table_lines;
+		for (auto &entry : btb[index])
+        {
+			if (std::get<0>(entry) == ip)
+            {
+                std::get<2>(entry) = timestamp++;
+                return std::get<1>(entry) == target;
+            }
 		}
 		return false;
 	}
 
     virtual void update(bool predicted, bool actual, ADDRINT ip, ADDRINT target) {
-		int index = ip % sets;
-		for (auto &entry : btb[index]) {
-			if (entry.first == ip) {
-				entry.second = target;
-				return;
-			}
-		}
-		// if not found, replace a random entry
-		int replaceIndex = rand() % table_assoc;
-		btb[index][replaceIndex] = std::make_pair(ip, target);
+		int index = ip % table_lines;
+        if (actual && predicted)
+        {
+            for (auto &entry : btb[index])
+            {
+                if (std::get<0>(entry) == ip)
+                {
+                    correct_target_predictions += (std::get<1>(entry) == target);
+                    incorrect_target_predictions += (std::get<1>(entry) != target);
+                    std::get<1>(entry) = target;
+                }
+            }
+        }
+		// if not found, replace the least recently used entry
+        else if (actual && !predicted)
+        {
+            int min = 0;
+            for (int i = 0; i < table_assoc; i++)
+            {
+                if (std::get<2>(btb[index][i]) < std::get<2>(btb[index][min]))
+                    min = i;
+            }
+            std::get<0>(btb[index][min]) = ip;
+            std::get<1>(btb[index][min]) = target;
+            std::get<2>(btb[index][min]) = timestamp++;
+        }
+        else if (!actual && predicted)
+        {
+            for (auto &entry: btb[index])
+            {
+                if (std::get<0>(entry) == ip)
+                {
+                    std::get<0>(entry) = 0;
+                    std::get<1>(entry) = 0;
+                    std::get<2>(entry) = 0;
+                }
+            }
+        }
         updateCounters(predicted, actual);
 	}
 
@@ -185,20 +217,18 @@ public:
 		return stream.str();
 	}
 
-    UINT64 getNumCorrectTargetPredictions() { 
-		UINT64 numCorrect = 0;
-		for (auto &line : btb) {
-			for (auto &entry : line) {
-				if (predict(entry.first, entry.second))
-					numCorrect++;
-			}
-		}
-		return numCorrect;
-	}
+    UINT64 getNumCorrectTargetPredictions() { return correct_target_predictions; }
+	UINT64 getNumIncorrectTargetPredictions() { return incorrect_target_predictions; }
 
 private:
-	int table_lines, table_assoc, sets;
-	std::vector<std::vector<std::pair<ADDRINT, ADDRINT>>> btb; // The Branch Target Buffer
+	int table_lines, table_assoc, total;
+    UINT64 correct_target_predictions;
+    UINT64 incorrect_target_predictions;
+    UINT64 timestamp;
+    // The Branch Target Buffer
+    // Each entry is a tuple of (ip, target, counter)
+    // the counter is used in order to implement LRU replacement
+	std::vector<std::vector<std::tuple<ADDRINT, ADDRINT, UINT64>>> btb; 
 };
 
 
@@ -259,7 +289,6 @@ public:
                                    unsigned int bht_bits_, unsigned int bht_entries_)
     : BranchPredictor(), pht_bits(pht_bits_), bht_bits(bht_bits_), pht_entries(pht_entries_), bht_entries(bht_entries_)
     {
-        //std::cout << "HERE 1" << std::endl;
         COUNTER_MAX = (1 << pht_bits) - 1;
         CAP = 1 << bht_bits;
 
@@ -268,35 +297,26 @@ public:
 
         PHT = new unsigned long long [pht_entries];
         memset(PHT, 0, pht_entries * sizeof(*PHT));
-        //std::cout << "HERE 2" << std::endl;
     };
     
     ~LocalHistoryTwoLevelPredictor()
     {
 
-        //std::cout << "Local destructor not ok" << std::endl;
         delete BHT;
         delete PHT;
-        //std::cout << "Local destructor ok" << std::endl;
     };
 
     virtual bool predict(ADDRINT ip, ADDRINT target)
     {
-        //std::cout << "Local predict fucked 1" << std::endl;
         unsigned int bht_table_index = ip % bht_entries;
-        //std::cout << "Local predict fucked 2" << std::endl;
         unsigned long long bht_table_value = BHT[bht_table_index];
-        //std::cout << "Local predict fucked 3" << std::endl;
         unsigned long long pht_table_index = (((ip % pht_entries) << (bht_bits)) + bht_table_value) % pht_entries;
-        //std::cout << "Local predict fucked 4" << std::endl;
         unsigned long long prediction = (PHT[pht_table_index] >> (pht_bits - 1));
-        //std::cout << "Local predict ok" << std::endl;
         return (prediction != 0);
     };
 
     virtual void update(bool predicted, bool actual, ADDRINT ip, ADDRINT target)
     {
-        //std::cout << "Local update fucked" << std::endl;
         unsigned int bht_table_index = ip % bht_entries;
         unsigned long long bht_table_value = BHT[bht_table_index];
         unsigned long long pht_table_index = (((ip % pht_entries) << (bht_bits)) + bht_table_value) % pht_entries;
@@ -310,7 +330,6 @@ public:
         }
         // update bht for specific branch
         BHT[bht_table_index] = ((actual << bht_bits) + BHT[bht_table_index]) >> 1;
-        //std::cout << "Local update ok" << std::endl;
         updateCounters(predicted, actual);
     };
 
@@ -337,36 +356,27 @@ public:
     GlobalHistoryTwoLevelPredictor(unsigned int pht_entries_, unsigned int pht_bits_, unsigned int bhr_length_)
     : BranchPredictor(), pht_bits(pht_bits_), pht_entries(pht_entries_), bhr_length(bhr_length_)
     {
-        //std::cout << "Constructor start" << std::endl;
         COUNTER_MAX = (1 << pht_bits) - 1;
         BHR = 0;
         PHT = new unsigned long long [pht_entries];
         memset(PHT, 0, pht_entries * sizeof(*PHT));
-        //std::cout << "Constructor ok" << std::endl;
     };
     
     ~GlobalHistoryTwoLevelPredictor()
     {
-        //std::cout << "Destructor fucked" << std::endl;
         delete PHT;
-        //std::cout << "Destructor ok" << std::endl;
     };
 
     virtual bool predict(ADDRINT ip, ADDRINT target)
     {
-        //std::cout << "predict bad 1" << std::endl;
         unsigned int pht_table_index = ((BHR * (pht_entries >> bhr_length)) + (ip % (pht_entries >> bhr_length))) % pht_entries;
-        //std::cout << "predict bad 2" << std::endl;
         unsigned long long pht_table_value = PHT[pht_table_index];
-        //std::cout << "predict bad 3" << std::endl;
         unsigned long long prediction = (pht_table_value >> (pht_bits - 1));
-        //std::cout << "predict ok" << std::endl;
         return (prediction != 0);
     };
 
     virtual void update(bool predicted, bool actual, ADDRINT ip, ADDRINT target)
     {
-        //std::cout << "update bad" << std::endl;
         unsigned int pht_table_index = ((BHR * (pht_entries >> bhr_length)) + (ip % (pht_entries >> bhr_length))) % pht_entries;
         // update pht for specific pattern
         if (actual) {
@@ -381,7 +391,6 @@ public:
         // add it to the register (it's like you are queuing the prediction)
         // and then shift the whole thing to the right by one bit.
         BHR = ((actual << bhr_length) + BHR) >> 1;
-        //std::cout << "update ok" << std::endl;
         updateCounters(predicted, actual);
     };
 

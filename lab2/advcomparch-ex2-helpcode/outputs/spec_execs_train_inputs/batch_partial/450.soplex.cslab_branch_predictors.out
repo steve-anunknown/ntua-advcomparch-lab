@@ -1,0 +1,25 @@
+Total Instructions: 2655372245
+
+RAS: (Correct - Incorrect)
+
+Branch Predictors: (Name - Correct - Incorrect)
+  LocalHistoryTwoLevel: PHT Entries = 8192, PHT n-bit counter length = 2, BHT Entries = 2048, BHT Entry length = 8: 423313202 14949709
+  LocalHistoryTwoLevel: PHT Entries = 8192, PHT n-bit counter length = 2, BHT Entries = 4096, BHT Entry length = 4: 420398087 17864824
+  LocalHistoryTwoLevel: PHT Entries = 8192, PHT n-bit counter length = 2, BHT Entries = 8192, BHT Entry length = 2: 418820692 19442219
+  GlobalHistoryTwoLevel: PHT Entries = 16384, PHT n-bit counter length = 2, BHR Length = 2: 414611779 23651132
+  GlobalHistoryTwoLevel: PHT Entries = 16384, PHT n-bit counter length = 2, BHR Length = 4: 416212804 22050107
+  GlobalHistoryTwoLevel: PHT Entries = 16384, PHT n-bit counter length = 2, BHR Length = 8: 421623767 16639144
+  GlobalHistoryTwoLevel: PHT Entries = 8192, PHT n-bit counter length = 4, BHR Length = 2: 415424973 22837938
+  GlobalHistoryTwoLevel: PHT Entries = 8192, PHT n-bit counter length = 4, BHR Length = 4: 416908599 21354312
+  GlobalHistoryTwoLevel: PHT Entries = 8192, PHT n-bit counter length = 4, BHR Length = 8: 421712825 16550086
+  TournamentHybridPredictor-4K-Entries-(LocalHistoryTwoLevel: PHT Entries = 1024, PHT n-bit counter length = 3, BHT Entries = 1024, BHT Entry length = 10, GlobalHistoryTwoLevel: PHT Entries = 4096, PHT n-bit counter length = 2, BHR Length = 12): 414295515 23967396
+  TournamentHybridPredictor-2K-Entries-(LocalHistoryTwoLevel: PHT Entries = 1024, PHT n-bit counter length = 3, BHT Entries = 1024, BHT Entry length = 10, GlobalHistoryTwoLevel: PHT Entries = 8192, PHT n-bit counter length = 2, BHR Length = 4): 414644237 23618674
+  TournamentHybridPredictor-2K-Entries-(LocalHistoryTwoLevel: PHT Entries = 1024, PHT n-bit counter length = 3, BHT Entries = 1024, BHT Entry length = 10, GlobalHistoryTwoLevel: PHT Entries = 8192, PHT n-bit counter length = 2, BHR Length = 8): 418144718 20118193
+  TournamentHybridPredictor-1K-Entries-(LocalHistoryTwoLevel: PHT Entries = 1024, PHT n-bit counter length = 3, BHT Entries = 1024, BHT Entry length = 10, GlobalHistoryTwoLevel: PHT Entries = 4096, PHT n-bit counter length = 4, BHR Length = 4): 414570746 23692165
+  TournamentHybridPredictor-1K-Entries-(LocalHistoryTwoLevel: PHT Entries = 1024, PHT n-bit counter length = 3, BHT Entries = 1024, BHT Entry length = 10, GlobalHistoryTwoLevel: PHT Entries = 4096, PHT n-bit counter length = 4, BHR Length = 8): 416441483 21821428
+  TournamentHybridPredictor-1K-Entries-(Nbit-32K-4, GlobalHistoryTwoLevel: PHT Entries = 4096, PHT n-bit counter length = 4, BHR Length = 4): 411701976 26560935
+  TournamentHybridPredictor-1K-Entries-(Nbit-32K-4, GlobalHistoryTwoLevel: PHT Entries = 4096, PHT n-bit counter length = 4, BHR Length = 8): 409546347 28716564
+  TournamentHybridPredictor-2K-Entries-(Nbit-32K-4, GlobalHistoryTwoLevel: PHT Entries = 2048, PHT n-bit counter length = 8, BHR Length = 4): 408897241 29365670
+  TournamentHybridPredictor-2K-Entries-(Nbit-32K-4, GlobalHistoryTwoLevel: PHT Entries = 2048, PHT n-bit counter length = 8, BHR Length = 8): 406588200 31674711
+
+BTB Predictors: (Name - Correct - Incorrect - TargetCorrect)

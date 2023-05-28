@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 ## For nbit predictors
-predictors_to_plot = [ "  Nbit-16K-" ]
+predictors_to_plot = [ "  Static ", "  Pentium"]
 
 x_Axis = []
 mpki_Axis = []
@@ -17,13 +17,14 @@ line = fp.readline()
 while line:
 	tokens = line.split()
 	if line.startswith("Total Instructions:"):
-		total_ins = long(tokens[2])
+		total_ins = int(tokens[2])
 	else:
 		for pred_prefix in predictors_to_plot:
 			if line.startswith(pred_prefix):
-				predictor_string = tokens[0].split(':')[0]
-				correct_predictions = long(tokens[1])
-				incorrect_predictions = long(tokens[2])
+				predictor_string = line.split(':')[0]
+				predictions = line.split(':')[1]
+				correct_predictions = int(predictions.split()[0])
+				incorrect_predictions = int(predictions.split()[1])
 				x_Axis.append(predictor_string)
 				mpki_Axis.append(incorrect_predictions / (total_ins / 1000.0))
 
@@ -41,4 +42,4 @@ ax1.set_ylabel("$MPKI$")
 line1 = ax1.plot(mpki_Axis, label="mpki", color="red",marker='x')
 
 plt.title("MPKI")
-plt.savefig(raw_input("Please provide a filename for the produced file (e.g. output.png): "),bbox_inches="tight")
+plt.savefig(input("Please provide a filename for the produced file (e.g. output.png): "),bbox_inches="tight")

@@ -186,16 +186,16 @@ VOID InitPredictors()
     */
     // THIRD EXERCISE
     // BTB predictors
-    /*
-    branch_predictors.push_back(new BTBPredictor(512, 1));
-    branch_predictors.push_back(new BTBPredictor(512, 2));
-    branch_predictors.push_back(new BTBPredictor(256, 2));
-    branch_predictors.push_back(new BTBPredictor(256, 4));
-    branch_predictors.push_back(new BTBPredictor(128, 2));
-    branch_predictors.push_back(new BTBPredictor(128, 4));
-    branch_predictors.push_back(new BTBPredictor(64, 4));
-    branch_predictors.push_back(new BTBPredictor(64, 8));
+    btb_predictors.push_back(new BTBPredictor(512, 1));
+    btb_predictors.push_back(new BTBPredictor(512, 2));
+    btb_predictors.push_back(new BTBPredictor(256, 2));
+    btb_predictors.push_back(new BTBPredictor(256, 4));
+    btb_predictors.push_back(new BTBPredictor(128, 2));
+    btb_predictors.push_back(new BTBPredictor(128, 4));
+    btb_predictors.push_back(new BTBPredictor(64, 4));
+    btb_predictors.push_back(new BTBPredictor(64, 8));
     
+    /*
     */
     // FIFTH EXERCISE
     /*
@@ -203,7 +203,6 @@ VOID InitPredictors()
     branch_predictors.push_back(bruh);
     StaticBTFNTPredictor *bruhh = new StaticBTFNTPredictor();
     branch_predictors.push_back(bruhh);
-    */
     //std::cout << "Local constructor ok" << std::endl;
 
     branch_predictors.push_back(new StaticAlwaysTakenPredictor);
@@ -235,6 +234,8 @@ VOID InitPredictors()
     branch_predictors.push_back(new TournamentHybridPredictor(1024, 4, new NbitPredictor(15, 4), new GlobalHistoryTwoLevelPredictor(4096, 4, 8)));
     branch_predictors.push_back(new TournamentHybridPredictor(2048, 2, new NbitPredictor(15, 4), new GlobalHistoryTwoLevelPredictor(2048, 8, 4)));
     branch_predictors.push_back(new TournamentHybridPredictor(2048, 4, new NbitPredictor(15, 4), new GlobalHistoryTwoLevelPredictor(2048, 8, 8)));
+
+    */
 }
 
 VOID InitRas()
