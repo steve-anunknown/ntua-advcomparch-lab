@@ -1,0 +1,21 @@
+\babel@toc {greek}{}\relax 
+\contentsline {section}{\numberline {1}Μελέτη Εντολών Άλματος}{3}{}%
+\contentsline {section}{\numberline {2}Μελέτη των \foreignlanguage {english}{N-bit Predictors}}{4}{}%
+\contentsline {subsection}{\numberline {2.1}\foreignlanguage {english}{Hardware 16K}}{4}{}%
+\contentsline {subsection}{\numberline {2.2}\foreignlanguage {english}{Hardware 32K}}{4}{}%
+\contentsline {section}{\numberline {3}Μελέτη του \foreignlanguage {english}{BTB}}{6}{}%
+\contentsline {section}{\numberline {4}Μελέτη του \foreignlanguage {english}{RAS}}{7}{}%
+\contentsline {section}{\numberline {5}Σύγκριση Διαφορετικών \foreignlanguage {english}{predictors}}{8}{}%
+\babel@toc {english}{}\relax 
+\babel@toc {greek}{}\relax 
+\babel@toc {english}{}\relax 
+\babel@toc {greek}{}\relax 
+\contentsline {section}{\numberline {6}Παράρτημα}{11}{}%
+\contentsline {subsection}{\numberline {6.1}\foreignlanguage {english}{TwoBitBPredictor}}{11}{}%
+\babel@toc {english}{}\relax 
+\contentsline {subsection}{\numberline {6.2}\foreignlanguage {english}{BTB}}{12}{}%
+\contentsline {subsection}{\numberline {6.3}\foreignlanguage {english}{StaticAlwaysTaken and StaticBTFNT Predictors}}{14}{}%
+\contentsline {subsection}{\numberline {6.4}\foreignlanguage {english}{LocalHistoryTwoLevel Predictor}}{15}{}%
+\contentsline {subsection}{\numberline {6.5}\foreignlanguage {english}{GlobalHistoryTwoLevel Predictor}}{16}{}%
+\contentsline {subsection}{\numberline {6.6}\foreignlanguage {english}{TournamentHybrid Predictor}}{17}{}%
+\babel@toc {greek}{}\relax 
